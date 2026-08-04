@@ -1,0 +1,438 @@
+{
+  "info": {
+    "name": "Helpdesk API - SLA + JWT",
+    "description": "Coleccion para probar la API de Mesa de Ayuda (Helpdesk) con SLA.\n\nFlujo sugerido:\n1. Ejecutar Login (admin, soporte o usuario) para obtener tokens.\n2. Usar los demas endpoints; los tests guardan automaticamente access_token, refresh_token y ticket_id.\n3. Probar /api/auth/refresh con el refresh_token.\n4. Ejecutar /api/auth/logout y verificar que un /refresh posterior falla con 401.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "access_token", "value": "" },
+    { "key": "refresh_token", "value": "" },
+    { "key": "ticket_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Público",
+      "item": [
+        {
+          "name": "Ping (health check)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/ping", "host": ["{{baseUrl}}"], "path": ["api", "ping"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Registro (nuevo usuario)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ana Lopez\",\n  \"email\": \"ana@test.com\",\n  \"password\": \"clave123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/registro", "host": ["{{baseUrl}}"], "path": ["api", "auth", "registro"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Registro duplicado (espera 409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ana Lopez\",\n  \"email\": \"ana@test.com\",\n  \"password\": \"clave123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/registro", "host": ["{{baseUrl}}"], "path": ["api", "auth", "registro"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Registro con datos inválidos (espera 400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"\",\n  \"email\": \"correo-invalido\",\n  \"password\": \"123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/registro", "host": ["{{baseUrl}}"], "path": ["api", "auth", "registro"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Login ADMIN",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "pm.collectionVariables.set('access_token', data.accessToken);",
+                  "pm.collectionVariables.set('refresh_token', data.refreshToken);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@helpdesk.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Login SOPORTE",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "pm.collectionVariables.set('access_token', data.accessToken);",
+                  "pm.collectionVariables.set('refresh_token', data.refreshToken);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"soporte@helpdesk.com\",\n  \"password\": \"soporte123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Login USUARIO",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "pm.collectionVariables.set('access_token', data.accessToken);",
+                  "pm.collectionVariables.set('refresh_token', data.refreshToken);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usuario@helpdesk.com\",\n  \"password\": \"usuario123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Login con credenciales incorrectas (espera 401)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@helpdesk.com\",\n  \"password\": \"incorrecta\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh (renueva access token con rotación)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "pm.collectionVariables.set('access_token', data.accessToken);",
+                  "pm.collectionVariables.set('refresh_token', data.refreshToken);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/refresh", "host": ["{{baseUrl}}"], "path": ["api", "auth", "refresh"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh con token inválido (espera 401)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"token-inexistente\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/refresh", "host": ["{{baseUrl}}"], "path": ["api", "auth", "refresh"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Tickets",
+      "item": [
+        {
+          "name": "Crear ticket ALTA (SLA +4h)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "var data = pm.response.json();",
+                  "pm.collectionVariables.set('ticket_id', data.id);",
+                  "pm.test('SLA de ALTA = 4 horas', function () {",
+                  "  var diff = (new Date(data.slaVenceEn) - new Date(data.creadoEn)) / 3600000;",
+                  "  pm.expect(diff).to.eql(4);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Servidor de correo caido\",\n  \"descripcion\": \"No se envian ni reciben correos desde las 9am\",\n  \"prioridad\": \"ALTA\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/tickets", "host": ["{{baseUrl}}"], "path": ["api", "tickets"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear ticket BAJA (SLA +72h)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Actualizar datos de contacto\",\n  \"descripcion\": \"Cambiar el telefono de la cuenta corporativa\",\n  \"prioridad\": \"BAJA\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/tickets", "host": ["{{baseUrl}}"], "path": ["api", "tickets"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear ticket con prioridad inválida (espera 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Test\",\n  \"descripcion\": \"Test\",\n  \"prioridad\": \"URGENTISIMA\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/tickets", "host": ["{{baseUrl}}"], "path": ["api", "tickets"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Mis tickets",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/tickets/mios", "host": ["{{baseUrl}}"], "path": ["api", "tickets", "mios"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Todos los tickets (SOPORTE/ADMIN, paginado)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/tickets?page=0&size=5&sort=creadoEn,desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tickets"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "5" },
+                { "key": "sort", "value": "creadoEn,desc" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Todos los tickets con USUARIO (espera 403)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/tickets", "host": ["{{baseUrl}}"], "path": ["api", "tickets"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Tickets vencidos (SOPORTE/ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/tickets/vencidos", "host": ["{{baseUrl}}"], "path": ["api", "tickets", "vencidos"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Ticket por id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/tickets/{{ticket_id}}", "host": ["{{baseUrl}}"], "path": ["api", "tickets", "{{ticket_id}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Ticket inexistente (espera 404)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/tickets/99999", "host": ["{{baseUrl}}"], "path": ["api", "tickets", "99999"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Cambiar estado (SOPORTE/ADMIN)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"RESUELTO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tickets/{{ticket_id}}/estado",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tickets", "{{ticket_id}}", "estado"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Ruta protegida sin token (espera 401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/tickets", "host": ["{{baseUrl}}"], "path": ["api", "tickets"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout (revoca el refresh token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.collectionVariables.set('refresh_token', '');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/logout", "host": ["{{baseUrl}}"], "path": ["api", "auth", "logout"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Administración (ADMIN)",
+      "item": [
+        {
+          "name": "Ascender usuario a SOPORTE",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usuario@helpdesk.com\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/admin/soporte", "host": ["{{baseUrl}}"], "path": ["api", "admin", "soporte"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Ascender con rol insuficiente (espera 403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usuario@helpdesk.com\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/admin/soporte", "host": ["{{baseUrl}}"], "path": ["api", "admin", "soporte"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Estadísticas (tickets por estado y % SLA)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/estadisticas", "host": ["{{baseUrl}}"], "path": ["api", "admin", "estadisticas"] }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

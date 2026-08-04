@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: helpdesk-api
+  datasource:
+    url: jdbc:h2:mem:helpdesk;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+server:
+  port: 8080
+
+helpdesk:
+  jwt:
+    # Secreto de firma para el access token (JWT). En produccion debe ir en variables de entorno.
+    secret: "clave-super-secreta-helpdesk-2026-cambiar-en-produccion-1234567890abcdefghijklmnopqrstuvwxyz"
+    # Vida util del access token
+    access-token-ms: 900000
+  # SLA en horas segun la prioridad (configurable)
+  sla:
+    alta: 4
+    media: 24
+    baja: 72
+  # Vida util del refresh token
+  refresh-token-ms: 604800000
+
+logging:
+  level:
+    org.springframework.security: WARN
