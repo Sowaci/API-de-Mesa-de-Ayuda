@@ -25,14 +25,7 @@ El sembrado también crea tickets de ejemplo, **incluido uno vencido** para demo
 
 Se eligió la **Opción A** porque:
 
-1. **Permite revocación real**: el logout marca `revocado = true`, por lo que un
-   refresh token ya no puede reutilizarse (requisito del taller).
-2. **Detección de reutilización**: si un token ya rotado se vuelve a enviar, el
-   servidor lo detecta y responde 401.
-3. **Es la más didáctica**: obliga a razonar sobre el ciclo de vida del token
-   (emisión → renovación → rotación → revocación).
-4. El token se almacena **hasheado con SHA-256**, nunca en claro: una fuga en la
-   base de datos no expone tokens reutilizables.
+Se eligió esta forma porque permite que cuando un usuario cierre sesión el token quede desactivado y no se pueda volver a usar. Además, si alguien intenta reutilizar un token que ya fue cambiado o revocado, el sistema lo detecta y responde con un error (401). También ayuda a entender mejor cómo funciona el ciclo de vida de un token, desde que se crea hasta que se renueva o se invalida. Por último, los tokens se guardan con un hash SHA-256 en lugar de almacenarse directamente, lo que hace que la información sea más segura en caso de que la base de datos llegue a verse comprometida.
 
 ### Ciclo de vida del refresh token
 
