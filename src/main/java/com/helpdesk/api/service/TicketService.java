@@ -1,8 +1,8 @@
 package com.helpdesk.api.service;
 
-import com.helpdesk.api.dto.TicketHistorialResponse;
-import com.helpdesk.api.dto.TicketRequest;
-import com.helpdesk.api.dto.TicketResponse;
+import com.helpdesk.api.dto.response.TicketHistorialResponse;
+import com.helpdesk.api.dto.request.TicketRequest;
+import com.helpdesk.api.dto.response.TicketResponse;
 import com.helpdesk.api.entity.Ticket;
 import com.helpdesk.api.entity.TicketHistorial;
 import com.helpdesk.api.entity.Usuario;
@@ -51,6 +51,7 @@ public class TicketService {
                 .prioridad(request.prioridad())
                 .estado(Estado.ABIERTO) 
                 .creadoEn(ahora)
+
                 .slaVenceEn(slaService.calcularVencimientoSla(ahora, request.prioridad()))
                 .creadoPor(creador)
                 .build();
@@ -101,6 +102,7 @@ public class TicketService {
                 ticket.setResueltoEn(null);
             }
 
+            // Historial: registra quien cambio el estado y cuando
             historialRepository.save(TicketHistorial.builder()
                     .ticket(ticket)
                     .estadoAnterior(anterior)
@@ -115,6 +117,7 @@ public class TicketService {
 
     @Transactional(readOnly = true)
     public List<TicketHistorialResponse> historial(Long ticketId, Usuario usuario) {
+        // Misma regla de acceso que consultar el ticket: dueno o SOPORTE/ADMIN
         porId(ticketId, usuario);
         return historialRepository.findByTicketIdOrderByFechaAsc(ticketId)
                 .stream().map(TicketHistorialResponse::desde).toList();

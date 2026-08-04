@@ -1,4 +1,4 @@
-package com.helpdesk.api.dto;
+package com.helpdesk.api.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

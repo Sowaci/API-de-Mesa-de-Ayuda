@@ -1,4 +1,4 @@
-package com.helpdesk.api.dto;
+package com.helpdesk.api.dto.request;
 
 import com.helpdesk.api.enums.Estado;
 import jakarta.validation.constraints.NotNull;

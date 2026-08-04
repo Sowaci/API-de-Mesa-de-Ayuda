@@ -1,9 +1,9 @@
 package com.helpdesk.api.controller;
 
-import com.helpdesk.api.dto.EstadoRequest;
-import com.helpdesk.api.dto.TicketHistorialResponse;
-import com.helpdesk.api.dto.TicketRequest;
-import com.helpdesk.api.dto.TicketResponse;
+import com.helpdesk.api.dto.request.EstadoRequest;
+import com.helpdesk.api.dto.response.TicketHistorialResponse;
+import com.helpdesk.api.dto.request.TicketRequest;
+import com.helpdesk.api.dto.response.TicketResponse;
 import com.helpdesk.api.entity.Usuario;
 import com.helpdesk.api.service.TicketService;
 import jakarta.validation.Valid;

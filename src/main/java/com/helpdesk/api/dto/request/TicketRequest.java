@@ -1,4 +1,4 @@
-package com.helpdesk.api.dto;
+package com.helpdesk.api.dto.request;
 
 import com.helpdesk.api.enums.Prioridad;
 import jakarta.validation.constraints.NotBlank;

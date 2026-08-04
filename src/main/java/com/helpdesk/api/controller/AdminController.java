@@ -1,7 +1,7 @@
 package com.helpdesk.api.controller;
 
-import com.helpdesk.api.dto.AdminPromocionRequest;
-import com.helpdesk.api.dto.EstadisticasResponse;
+import com.helpdesk.api.dto.request.AdminPromocionRequest;
+import com.helpdesk.api.dto.response.EstadisticasResponse;
 import com.helpdesk.api.entity.Usuario;
 import com.helpdesk.api.enums.Estado;
 import com.helpdesk.api.enums.Rol;

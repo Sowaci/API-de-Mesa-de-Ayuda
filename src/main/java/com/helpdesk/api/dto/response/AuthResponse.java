@@ -1,4 +1,4 @@
-package com.helpdesk.api.dto;
+package com.helpdesk.api.dto.response;
 
 public record AuthResponse(
         String accessToken,

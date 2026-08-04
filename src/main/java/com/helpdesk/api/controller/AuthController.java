@@ -1,10 +1,10 @@
 package com.helpdesk.api.controller;
 
-import com.helpdesk.api.dto.AuthResponse;
-import com.helpdesk.api.dto.LoginRequest;
-import com.helpdesk.api.dto.RefreshRequest;
-import com.helpdesk.api.dto.RefreshResponse;
-import com.helpdesk.api.dto.RegistroRequest;
+import com.helpdesk.api.dto.response.AuthResponse;
+import com.helpdesk.api.dto.request.LoginRequest;
+import com.helpdesk.api.dto.request.RefreshRequest;
+import com.helpdesk.api.dto.response.RefreshResponse;
+import com.helpdesk.api.dto.request.RegistroRequest;
 import com.helpdesk.api.entity.Usuario;
 import com.helpdesk.api.service.AuthService;
 import jakarta.validation.Valid;
