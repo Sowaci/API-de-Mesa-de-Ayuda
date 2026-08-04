@@ -17,11 +17,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.HexFormat;
 
-/**
- * Ciclo de vida del refresh token (Opcion A del taller: persistido en base de
- * datos). Se almacena el hash SHA-256 del token, no el valor en claro, y se
- * aplica rotacion: cada renovacion revoca el anterior y emite uno nuevo.
- */
 @Service
 public class RefreshTokenService {
 
@@ -51,10 +46,6 @@ public class RefreshTokenService {
         return token;
     }
 
-    /**
-     * Valida que el refresh token exista, no este revocado y no haya expirado.
-     * En caso de que ya no sea valido lo revoca (deteccion de reuso) y lanza 401.
-     */
     @Transactional
     public RefreshToken validar(String tokenCrudo) {
         RefreshToken entidad = refreshTokenRepository.findByToken(hash(tokenCrudo))

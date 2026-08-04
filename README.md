@@ -1,31 +1,10 @@
 # API de Mesa de Ayuda (Helpdesk) con SLA — Spring Boot + JWT
 
-API REST para gestionar tickets de soporte técnico con **SLA calculado por prioridad**,
-**autenticación JWT (access + refresh token)** y **autorización por roles (RBAC)**.
-
-## Stack tecnológico
-
-| Componente       | Tecnología                              |
-|------------------|-----------------------------------------|
-| Lenguaje         | Java 17+ (probado con JDK 21)           |
-| Framework        | Spring Boot 3.4.x                       |
-| Seguridad        | Spring Security 6 + JWT (jjwt 0.12.6)   |
-| Persistencia     | Spring Data JPA                         |
-| Base de datos    | H2 en memoria                           |
-| Otros            | Lombok, Bean Validation, Maven          |
-
-## Requisitos
-
-- JDK 17 o superior
-- Maven 3.8+
-
 ## Ejecución
 
 ```bash
 mvn spring-boot:run
-# o bien
-mvn clean package -DskipTests
-java -jar target/helpdesk-api-0.0.1-SNAPSHOT.jar
+
 ```
 
 La API queda en `http://localhost:8080`. La consola H2 está disponible en
@@ -67,14 +46,6 @@ Se eligió la **Opción A** porque:
 4. El refresh token **no sirve para acceder a rutas protegidas** (el filtro JWT
    solo acepta tokens con `tipo = access`).
 
-## Flujo de autenticación
-
-```
-1. POST /api/auth/login  →  { accessToken, refreshToken }
-2. Peticiones protegidas →  Authorization: Bearer <accessToken>
-3. accessToken expira (401) → POST /api/auth/refresh { refreshToken } → nuevos tokens
-4. POST /api/auth/logout → revoca el refresh token
-```
 
 ## Endpoints
 
@@ -107,68 +78,3 @@ Se eligió la **Opción A** porque:
 | POST   | /api/admin/soporte          | ADMIN          | Asciende un usuario al rol SOPORTE               |
 | GET    | /api/admin/estadisticas     | ADMIN          | Tickets por estado y % de cumplimiento de SLA (bono) |
 
-## Regla de negocio: SLA
-
-Al crear un ticket el servidor calcula `slaVenceEn = creadoEn + horas según prioridad`.
-El cliente **nunca envía** `slaVenceEn` ni `estado` (el estado inicial siempre es `ABIERTO`).
-
-| Prioridad | SLA   |
-|-----------|-------|
-| ALTA      | 4 h   |
-| MEDIA     | 24 h  |
-| BAJA      | 72 h  |
-
-Las horas son configurables en `application.yml` (`helpdesk.sla.*`).
-
-Un ticket está **vencido** cuando `ahora > slaVenceEn` y su estado no es `RESUELTO`.
-Cada respuesta de ticket incluye el campo `vencido` y el endpoint `GET /api/tickets/vencidos`
-lista los vencidos.
-
-## Códigos de respuesta
-
-| Situación                                       | Código |
-|-------------------------------------------------|--------|
-| Creación exitosa                                | 201    |
-| Consulta exitosa                                | 200    |
-| Datos inválidos (validaciones, enum incorrecto) | 400    |
-| Sin token / token inválido / refresh inválido   | 401    |
-| Rol insuficiente                                | 403    |
-| Recurso no encontrado                           | 404    |
-| Email ya registrado                             | 409    |
-
-## Validaciones
-
-- `email`: formato válido y único (duplicados → 409)
-- `password`: mínimo 6 caracteres
-- `titulo` y `descripcion`: obligatorios (no vacíos)
-- `prioridad` y `estado`: solo aceptan los valores del enum (→ 400)
-
-## Postman
-
-Importar el archivo `Helpdesk.postman_collection.json` (colección 2.1). Incluye
-todos los endpoints con ejemplos de cuerpo y variables para los tokens
-(`access_token`, `refresh_token`, `ticket_id`).
-
-## Estructura del proyecto
-
-```
-src/main/java/com/helpdesk/api
-├── config/        SecurityConfig, DataSeeder
-├── controller/    AuthController, TicketController, AdminController, PingController
-├── dto/           Requests y Responses (records + validación)
-├── entity/        Usuario, Ticket, RefreshToken, TicketHistorial
-├── enums/         Rol, Prioridad, Estado
-├── exception/     Excepciones de negocio y GlobalExceptionHandler
-├── repository/    Spring Data JPA
-├── security/      JwtService, JwtAuthenticationFilter, handlers 401/403
-└── service/       AuthService, TicketService, RefreshTokenService, SlaService
-```
-
-## Retos opcionales implementados (bono)
-
-- **Paginación** en `GET /api/tickets` (`?page=0&size=10&sort=creadoEn,desc`)
-- **Historial de cambios de estado** por ticket en `GET /api/tickets/{id}/historial`
-  (registra estado anterior → nuevo, usuario y fecha; accesible para el dueño
-  del ticket o roles SOPORTE/ADMIN)
-- **Estadísticas** en `GET /api/admin/estadisticas`: tickets por estado, % de
-  cumplimiento de SLA (resueltos dentro del SLA / resueltos) y tickets vencidos.

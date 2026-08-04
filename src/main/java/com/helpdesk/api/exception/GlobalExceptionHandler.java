@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.NOT_FOUND, "Not Found", "Recurso no encontrado: " + e.getResourcePath());
     }
 
-    @ExceptionHandler({CredencialesInvalidasException.class, TokenInvalidoException.class})
+    @ExceptionHandler({ CredencialesInvalidasException.class, TokenInvalidoException.class })
     public ResponseEntity<Map<String, Object>> noAutorizado(RuntimeException e) {
         return build(HttpStatus.UNAUTHORIZED, "Unauthorized", e.getMessage());
     }

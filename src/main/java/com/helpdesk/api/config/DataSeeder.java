@@ -15,10 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
-/**
- * Crea datos de prueba al arrancar: un usuario de cada rol y tickets de
- * ejemplo, incluido uno vencido para demostrar el listado /api/tickets/vencidos.
- */
 @Component
 public class DataSeeder implements CommandLineRunner {
 
@@ -67,7 +63,6 @@ public class DataSeeder implements CommandLineRunner {
 
         LocalDateTime ahora = LocalDateTime.now();
 
-        // Ticket vencido: creado hace 10 dias con prioridad ALTA (SLA 4h)
         LocalDateTime creadoVencido = ahora.minusDays(10);
         ticketRepository.save(Ticket.builder()
                 .titulo("Servidor de produccion caido")
@@ -79,7 +74,6 @@ public class DataSeeder implements CommandLineRunner {
                 .creadoPor(usuario)
                 .build());
 
-        // Ticket en proceso, cerca de vencer
         LocalDateTime creadoProceso = ahora.minusHours(2);
         ticketRepository.save(Ticket.builder()
                 .titulo("No puedo iniciar sesion en la VPN")
@@ -91,7 +85,6 @@ public class DataSeeder implements CommandLineRunner {
                 .creadoPor(usuario)
                 .build());
 
-        // Ticket resuelto dentro del SLA
         LocalDateTime creadoResuelto = ahora.minusDays(3);
         ticketRepository.save(Ticket.builder()
                 .titulo("Impresora de la oficina no imprime")

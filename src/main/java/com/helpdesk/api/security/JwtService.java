@@ -35,10 +35,6 @@ public class JwtService {
                 .compact();
     }
 
-    /**
-     * Extrae los claims validando firma y expiracion. Retorna null si el token
-     * es invalido o ha expirado.
-     */
     public Claims parsear(String token) {
         try {
             return Jwts.parser()

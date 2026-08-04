@@ -12,9 +12,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-/**
- * Devuelve 401 con cuerpo JSON cuando falta el token o es invalido.
- */
 @Component
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 

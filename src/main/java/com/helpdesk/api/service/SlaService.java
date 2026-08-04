@@ -7,10 +7,6 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-/**
- * Regla de negocio del SLA: al crear un ticket, el servidor suma las horas
- * configuradas segun la prioridad a la fecha de creacion.
- */
 @Component
 public class SlaService {
 

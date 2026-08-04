@@ -73,10 +73,6 @@ public class AuthService {
         return emitirTokens(usuario);
     }
 
-    /**
-     * Renovacion del access token usando el refresh token. Aplica rotacion:
-     * el refresh token usado se revoca y se emite uno nuevo.
-     */
     @Transactional
     public RefreshResponse renovar(String refreshTokenCrudo) {
         RefreshToken entidad = refreshTokenService.validar(refreshTokenCrudo);
@@ -84,7 +80,6 @@ public class AuthService {
         Usuario usuario = entidad.getUsuario();
         String nuevoAccess = jwtService.generarAccessToken(usuario);
 
-        // Rotacion: revocar el refresh token usado y emitir uno nuevo
         refreshTokenService.revocar(refreshTokenCrudo);
         String nuevoRefresh = refreshTokenService.generarToken(usuario);
 

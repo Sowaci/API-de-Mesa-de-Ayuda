@@ -49,9 +49,8 @@ public class TicketService {
                 .titulo(request.titulo())
                 .descripcion(request.descripcion())
                 .prioridad(request.prioridad())
-                .estado(Estado.ABIERTO) // El servidor define el estado inicial
+                .estado(Estado.ABIERTO) 
                 .creadoEn(ahora)
-                // Regla de negocio: el SLA lo calcula el servidor segun la prioridad
                 .slaVenceEn(slaService.calcularVencimientoSla(ahora, request.prioridad()))
                 .creadoPor(creador)
                 .build();
@@ -102,7 +101,6 @@ public class TicketService {
                 ticket.setResueltoEn(null);
             }
 
-            // Historial: registra quien cambio el estado y cuando
             historialRepository.save(TicketHistorial.builder()
                     .ticket(ticket)
                     .estadoAnterior(anterior)
@@ -117,7 +115,6 @@ public class TicketService {
 
     @Transactional(readOnly = true)
     public List<TicketHistorialResponse> historial(Long ticketId, Usuario usuario) {
-        // Misma regla de acceso que consultar el ticket: dueno o SOPORTE/ADMIN
         porId(ticketId, usuario);
         return historialRepository.findByTicketIdOrderByFechaAsc(ticketId)
                 .stream().map(TicketHistorialResponse::desde).toList();

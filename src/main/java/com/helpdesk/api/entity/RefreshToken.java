@@ -18,10 +18,6 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /**
-     * Valor del refresh token (almacenado como hash SHA-256 para que una fuga
-     * en la base de datos no exponga tokens reutilizables).
-     */
     @Column(nullable = false, unique = true)
     private String token;
 

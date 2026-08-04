@@ -12,10 +12,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-/**
- * Devuelve 403 con cuerpo JSON cuando el usuario autenticado no tiene el rol
- * necesario para la ruta.
- */
 @Component
 public class RestAccessDeniedHandler implements AccessDeniedHandler {
 

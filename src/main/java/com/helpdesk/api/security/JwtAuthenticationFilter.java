@@ -16,10 +16,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Filtro que valida el header "Authorization: Bearer <accessToken>" en cada
- * peticion y carga al usuario autenticado en el contexto de seguridad.
- */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -46,7 +42,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Claims claims = jwtService.parsear(token);
 
         if (claims != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Los refresh tokens (tipo=refresh) no sirven para acceder a rutas protegidas.
             if ("access".equals(claims.get("tipo"))) {
                 String email = jwtService.getEmail(claims);
                 usuarioRepository.findByEmail(email).ifPresent(usuario -> {
