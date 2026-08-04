@@ -1,6 +1,7 @@
 package com.helpdesk.api.controller;
 
 import com.helpdesk.api.dto.EstadoRequest;
+import com.helpdesk.api.dto.TicketHistorialResponse;
 import com.helpdesk.api.dto.TicketRequest;
 import com.helpdesk.api.dto.TicketResponse;
 import com.helpdesk.api.entity.Usuario;
@@ -58,5 +59,12 @@ public class TicketController {
                                         @Valid @RequestBody EstadoRequest request,
                                         @AuthenticationPrincipal Usuario usuario) {
         return ticketService.cambiarEstado(id, request.estado(), usuario);
+    }
+
+    @GetMapping("/{id}/historial")
+    public List<TicketHistorialResponse> historial(
+            @PathVariable Long id,
+            @AuthenticationPrincipal Usuario usuario) {
+        return ticketService.historial(id, usuario);
     }
 }

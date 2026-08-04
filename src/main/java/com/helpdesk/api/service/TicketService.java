@@ -1,12 +1,15 @@
 package com.helpdesk.api.service;
 
+import com.helpdesk.api.dto.TicketHistorialResponse;
 import com.helpdesk.api.dto.TicketRequest;
 import com.helpdesk.api.dto.TicketResponse;
 import com.helpdesk.api.entity.Ticket;
+import com.helpdesk.api.entity.TicketHistorial;
 import com.helpdesk.api.entity.Usuario;
 import com.helpdesk.api.enums.Estado;
 import com.helpdesk.api.enums.Rol;
 import com.helpdesk.api.exception.RecursoNoEncontradoException;
+import com.helpdesk.api.repository.TicketHistorialRepository;
 import com.helpdesk.api.repository.TicketRepository;
 import com.helpdesk.api.repository.UsuarioRepository;
 import org.springframework.data.domain.Page;
@@ -23,13 +26,16 @@ public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final UsuarioRepository usuarioRepository;
+    private final TicketHistorialRepository historialRepository;
     private final SlaService slaService;
 
     public TicketService(TicketRepository ticketRepository,
                          UsuarioRepository usuarioRepository,
+                         TicketHistorialRepository historialRepository,
                          SlaService slaService) {
         this.ticketRepository = ticketRepository;
         this.usuarioRepository = usuarioRepository;
+        this.historialRepository = historialRepository;
         this.slaService = slaService;
     }
 
@@ -87,15 +93,34 @@ public class TicketService {
         Ticket ticket = obtener(ticketId);
 
         Estado anterior = ticket.getEstado();
-        ticket.setEstado(nuevoEstado);
+        if (anterior != nuevoEstado) {
+            ticket.setEstado(nuevoEstado);
 
-        if (nuevoEstado == Estado.RESUELTO) {
-            ticket.setResueltoEn(LocalDateTime.now());
-        } else if (anterior == Estado.RESUELTO) {
-            ticket.setResueltoEn(null);
+            if (nuevoEstado == Estado.RESUELTO) {
+                ticket.setResueltoEn(LocalDateTime.now());
+            } else if (anterior == Estado.RESUELTO) {
+                ticket.setResueltoEn(null);
+            }
+
+            // Historial: registra quien cambio el estado y cuando
+            historialRepository.save(TicketHistorial.builder()
+                    .ticket(ticket)
+                    .estadoAnterior(anterior)
+                    .estadoNuevo(nuevoEstado)
+                    .usuario(usuario)
+                    .fecha(LocalDateTime.now())
+                    .build());
         }
 
         return TicketResponse.desde(ticketRepository.save(ticket));
+    }
+
+    @Transactional(readOnly = true)
+    public List<TicketHistorialResponse> historial(Long ticketId, Usuario usuario) {
+        // Misma regla de acceso que consultar el ticket: dueno o SOPORTE/ADMIN
+        porId(ticketId, usuario);
+        return historialRepository.findByTicketIdOrderByFechaAsc(ticketId)
+                .stream().map(TicketHistorialResponse::desde).toList();
     }
 
     private Ticket obtener(Long ticketId) {
