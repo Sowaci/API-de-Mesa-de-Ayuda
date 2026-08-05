@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Map;
 
 @RestController
@@ -41,11 +40,9 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Map<String, String>> logout(
-            @AuthenticationPrincipal Usuario usuario,
+    public ResponseEntity<Map<String, String>> logout(@AuthenticationPrincipal Usuario usuario,
             @RequestBody(required = false) RefreshRequest request) {
-        authService.logout(usuario.getEmail(),
-                request != null ? request.refreshToken() : null);
-        return ResponseEntity.ok(Map.of("message", "Sesion cerrada, refresh token revocado"));
+        authService.logout(usuario.getEmail(), request != null ? request.refreshToken() : null);
+        return ResponseEntity.ok(Map.of("message", "Sesion cerrada, refresh token revocado."));
     }
 }

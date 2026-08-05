@@ -15,8 +15,8 @@ public class SlaService {
     private final long horasBaja;
 
     public SlaService(@Value("${helpdesk.sla.alta:4}") long horasAlta,
-                      @Value("${helpdesk.sla.media:24}") long horasMedia,
-                      @Value("${helpdesk.sla.baja:72}") long horasBaja) {
+            @Value("${helpdesk.sla.media:24}") long horasMedia,
+            @Value("${helpdesk.sla.baja:72}") long horasBaja) {
         this.horasAlta = horasAlta;
         this.horasMedia = horasMedia;
         this.horasBaja = horasBaja;

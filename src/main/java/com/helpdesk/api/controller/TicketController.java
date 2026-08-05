@@ -29,9 +29,8 @@ public class TicketController {
 
     @PostMapping
     public ResponseEntity<TicketResponse> crear(@Valid @RequestBody TicketRequest request,
-                                                @AuthenticationPrincipal Usuario usuario) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ticketService.crear(request, usuario.getId()));
+            @AuthenticationPrincipal Usuario usuario) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(ticketService.crear(request, usuario.getId()));
     }
 
     @GetMapping("/mios")
@@ -55,16 +54,13 @@ public class TicketController {
     }
 
     @PatchMapping("/{id}/estado")
-    public TicketResponse cambiarEstado(@PathVariable Long id,
-                                        @Valid @RequestBody EstadoRequest request,
-                                        @AuthenticationPrincipal Usuario usuario) {
+    public TicketResponse cambiarEstado(@PathVariable Long id, @Valid @RequestBody EstadoRequest request,
+            @AuthenticationPrincipal Usuario usuario) {
         return ticketService.cambiarEstado(id, request.estado(), usuario);
     }
 
     @GetMapping("/{id}/historial")
-    public List<TicketHistorialResponse> historial(
-            @PathVariable Long id,
-            @AuthenticationPrincipal Usuario usuario) {
+    public List<TicketHistorialResponse> historial(@PathVariable Long id, @AuthenticationPrincipal Usuario usuario) {
         return ticketService.historial(id, usuario);
     }
 }

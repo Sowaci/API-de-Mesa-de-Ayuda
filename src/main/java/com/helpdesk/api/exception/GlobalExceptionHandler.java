@@ -44,8 +44,7 @@ public class GlobalExceptionHandler {
         body.put("status", HttpStatus.BAD_REQUEST.value());
         body.put("error", "Bad Request");
         Map<String, String> errores = new LinkedHashMap<>();
-        e.getBindingResult().getFieldErrors()
-                .forEach(fe -> errores.putIfAbsent(fe.getField(), fe.getDefaultMessage()));
+        e.getBindingResult().getFieldErrors().forEach(fe -> errores.putIfAbsent(fe.getField(), fe.getDefaultMessage()));
         body.put("message", "Validacion fallida");
         body.put("errores", errores);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
@@ -53,11 +52,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, Object>> jsonInvalido(HttpMessageNotReadableException e) {
-        String mensaje = "Cuerpo de la peticion invalido o con valores fuera del enum permitido";
-        if (e.getCause() instanceof InvalidFormatException ife
-                && ife.getValue() != null
+        String mensaje = "Cuerpo de la peticion invalido o con valores fuera del enum permitido.";
+        if (e.getCause() instanceof InvalidFormatException ife && ife.getValue() != null
                 && ife.getTargetType().isEnum()) {
-            mensaje = "El valor '" + ife.getValue() + "' no es valido. Valores permitidos: "
+            mensaje = "El valor '" + ife.getValue() + " no es valido. Valores permitidos: "
                     + String.join(", ", enumNombres(ife.getTargetType()));
         }
         return build(HttpStatus.BAD_REQUEST, "Bad Request", mensaje);
@@ -70,7 +68,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Map<String, Object>> accesoDenegado(AccessDeniedException e) {
-        return build(HttpStatus.FORBIDDEN, "Forbidden", "No tiene permisos para acceder a este recurso");
+        return build(HttpStatus.FORBIDDEN, "Forbidden", "No tiene permisos para acceder a este recurso.");
     }
 
     @ExceptionHandler(Exception.class)

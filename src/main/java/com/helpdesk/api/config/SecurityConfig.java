@@ -29,10 +29,8 @@ public class SecurityConfig {
     private final RestAuthenticationEntryPoint authenticationEntryPoint;
     private final RestAccessDeniedHandler accessDeniedHandler;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
-                          CustomUserDetailsService userDetailsService,
-                          RestAuthenticationEntryPoint authenticationEntryPoint,
-                          RestAccessDeniedHandler accessDeniedHandler) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, CustomUserDetailsService userDetailsService,
+            RestAuthenticationEntryPoint authenticationEntryPoint, RestAccessDeniedHandler accessDeniedHandler) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.userDetailsService = userDetailsService;
         this.authenticationEntryPoint = authenticationEntryPoint;
@@ -47,16 +45,18 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Rutas publicas
-                        .requestMatchers("/api/auth/registro", "/api/auth/login", "/api/auth/refresh", "/api/ping", "/h2-console/**").permitAll()
+                        .requestMatchers("/api/auth/registro", "/api/auth/login", "/api/auth/refresh", "/api/ping",
+                                "/h2-console/**")
+                        .permitAll()
                         // Solo ADMIN
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        // Rutas de rol SOPORTE/ADMIN (declaradas antes de /{id} para que la coincidencia sea correcta)
+                        // Rutas de rol SOPORTE/ADMIN (declaradas antes de /{id} para que la
+                        // coincidencia sea correcta)
                         .requestMatchers(HttpMethod.GET, "/api/tickets/vencidos").hasAnyRole("SOPORTE", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/tickets").hasAnyRole("SOPORTE", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/tickets/*/estado").hasAnyRole("SOPORTE", "ADMIN")
                         // Cualquier otra ruta: autenticado
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler))

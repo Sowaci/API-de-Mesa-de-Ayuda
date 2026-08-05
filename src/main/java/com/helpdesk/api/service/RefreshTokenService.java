@@ -26,7 +26,7 @@ public class RefreshTokenService {
     private final long vidaUtilMs;
 
     public RefreshTokenService(RefreshTokenRepository refreshTokenRepository,
-                               @Value("${helpdesk.refresh-token-ms:604800000}") long vidaUtilMs) {
+            @Value("${helpdesk.refresh-token-ms:604800000}") long vidaUtilMs) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.vidaUtilMs = vidaUtilMs;
     }
@@ -36,12 +36,8 @@ public class RefreshTokenService {
         SECURE_RANDOM.nextBytes(bytes);
         String token = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
 
-        RefreshToken entidad = RefreshToken.builder()
-                .token(hash(token))
-                .usuario(usuario)
-                .expiraEn(LocalDateTime.now().plus(vidaUtilMs, ChronoUnit.MILLIS))
-                .revocado(false)
-                .build();
+        RefreshToken entidad = RefreshToken.builder().token(hash(token)).usuario(usuario)
+                .expiraEn(LocalDateTime.now().plus(vidaUtilMs, ChronoUnit.MILLIS)).revocado(false).build();
         refreshTokenRepository.save(entidad);
         return token;
     }
@@ -49,15 +45,15 @@ public class RefreshTokenService {
     @Transactional
     public RefreshToken validar(String tokenCrudo) {
         RefreshToken entidad = refreshTokenRepository.findByToken(hash(tokenCrudo))
-                .orElseThrow(() -> new TokenInvalidoException("Refresh token inexistente o invalido"));
+                .orElseThrow(() -> new TokenInvalidoException("Refresh token inexistente o invalido."));
 
         if (Boolean.TRUE.equals(entidad.getRevocado())) {
-            throw new TokenInvalidoException("Refresh token revocado");
+            throw new TokenInvalidoException("Refresh token revocado.");
         }
         if (entidad.estaExpirado()) {
             entidad.setRevocado(true);
             refreshTokenRepository.save(entidad);
-            throw new TokenInvalidoException("Refresh token expirado");
+            throw new TokenInvalidoException("Refresh token expirado.");
         }
         return entidad;
     }

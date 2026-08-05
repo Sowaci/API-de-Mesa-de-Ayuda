@@ -29,10 +29,10 @@ public class AuthService {
     private final RefreshTokenService refreshTokenService;
 
     public AuthService(UsuarioRepository usuarioRepository,
-                       PasswordEncoder passwordEncoder,
-                       AuthenticationManager authenticationManager,
-                       JwtService jwtService,
-                       RefreshTokenService refreshTokenService) {
+            PasswordEncoder passwordEncoder,
+            AuthenticationManager authenticationManager,
+            JwtService jwtService,
+            RefreshTokenService refreshTokenService) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -43,15 +43,11 @@ public class AuthService {
     @Transactional
     public AuthResponse registrar(RegistroRequest request) {
         if (usuarioRepository.existsByEmail(request.email().toLowerCase())) {
-            throw new EmailYaRegistradoException("El email " + request.email() + " ya esta registrado");
+            throw new EmailYaRegistradoException("El email " + request.email() + " ya esta registrado.");
         }
 
-        Usuario usuario = Usuario.builder()
-                .nombre(request.nombre())
-                .email(request.email().toLowerCase())
-                .password(passwordEncoder.encode(request.password()))
-                .rol(Rol.USUARIO)
-                .build();
+        Usuario usuario = Usuario.builder().nombre(request.nombre()).email(request.email().toLowerCase())
+                .password(passwordEncoder.encode(request.password())).rol(Rol.USUARIO).build();
         usuarioRepository.save(usuario);
 
         return emitirTokens(usuario);
@@ -61,15 +57,12 @@ public class AuthService {
     public AuthResponse login(LoginRequest request) {
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.email().toLowerCase(), request.password()));
+                    new UsernamePasswordAuthenticationToken(request.email().toLowerCase(), request.password()));
         } catch (BadCredentialsException e) {
-            throw new CredencialesInvalidasException("Email o password incorrectos");
+            throw new CredencialesInvalidasException("Email o password incorrectos.");
         }
-
         Usuario usuario = usuarioRepository.findByEmail(request.email().toLowerCase())
-                .orElseThrow(() -> new CredencialesInvalidasException("Email o password incorrectos"));
-
+                .orElseThrow(() -> new CredencialesInvalidasException("Email o password incorrectos."));
         return emitirTokens(usuario);
     }
 
@@ -89,7 +82,7 @@ public class AuthService {
     @Transactional
     public void logout(String email, String refreshTokenCrudo) {
         Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new TokenInvalidoException("Usuario no encontrado"));
+                .orElseThrow(() -> new TokenInvalidoException("Usuario no encontrado."));
 
         if (refreshTokenCrudo != null && !refreshTokenCrudo.isBlank()) {
             refreshTokenService.revocar(refreshTokenCrudo);

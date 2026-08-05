@@ -19,8 +19,8 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request,
-                       HttpServletResponse response,
-                       AccessDeniedException accessDeniedException) throws IOException {
+            HttpServletResponse response,
+            AccessDeniedException accessDeniedException) throws IOException {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
@@ -28,8 +28,7 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
                 "timestamp", LocalDateTime.now().toString(),
                 "status", 403,
                 "error", "Forbidden",
-                "message", "No tiene permisos para acceder a este recurso",
-                "path", request.getRequestURI()
-        ));
+                "message", "No tiene permisos para acceder a este recurso.",
+                "path", request.getRequestURI()));
     }
 }

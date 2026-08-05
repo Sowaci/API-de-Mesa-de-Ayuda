@@ -19,8 +19,8 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request,
-                         HttpServletResponse response,
-                         AuthenticationException authException) throws IOException {
+            HttpServletResponse response,
+            AuthenticationException authException) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
@@ -28,8 +28,7 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
                 "timestamp", LocalDateTime.now().toString(),
                 "status", 401,
                 "error", "Unauthorized",
-                "message", "Token ausente, invalido o expirado",
-                "path", request.getRequestURI()
-        ));
+                "message", "Token ausente, invalido o expirado.",
+                "path", request.getRequestURI()));
     }
 }

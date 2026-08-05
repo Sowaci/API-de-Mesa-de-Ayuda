@@ -18,7 +18,7 @@ public class JwtService {
     private final long accessTokenMs;
 
     public JwtService(@Value("${helpdesk.jwt.secret}") String secreto,
-                      @Value("${helpdesk.jwt.access-token-ms}") long accessTokenMs) {
+            @Value("${helpdesk.jwt.access-token-ms}") long accessTokenMs) {
         this.clave = Keys.hmacShaKeyFor(secreto.getBytes(StandardCharsets.UTF_8));
         this.accessTokenMs = accessTokenMs;
     }

@@ -12,7 +12,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -32,19 +31,18 @@ public class AdminController {
     @PostMapping("/soporte")
     @Transactional
     public ResponseEntity<Map<String, Object>> ascenderASoporte(@Valid @RequestBody AdminPromocionRequest request) {
-        Usuario usuario = usuarioRepository.findByEmail(request.email().toLowerCase())
-                .orElseThrow(() -> new RecursoNoEncontradoException(
-                        "Usuario con email " + request.email() + " no encontrado"));
+        Usuario usuario = usuarioRepository.findByEmail(request.email().toLowerCase()).orElseThrow(
+                () -> new RecursoNoEncontradoException("Usuario con email " + request.email() + " no encontrado."));
 
         if (usuario.getRol() == Rol.ADMIN) {
-            throw new IllegalArgumentException("El rol ADMIN no puede degradarse a SOPORTE");
+            throw new IllegalArgumentException("El rol ADMIN no puede degradarse a SOPORTE.");
         }
 
         usuario.setRol(Rol.SOPORTE);
         usuarioRepository.save(usuario);
 
         Map<String, Object> respuesta = new LinkedHashMap<>();
-        respuesta.put("message", "Usuario ascendido al rol SOPORTE");
+        respuesta.put("message", "Usuario ascendido al rol SOPORTE.");
         respuesta.put("email", usuario.getEmail());
         respuesta.put("rol", usuario.getRol().name());
         return ResponseEntity.ok(respuesta);
@@ -57,15 +55,11 @@ public class AdminController {
         long totalResueltos = resueltosDentro + resueltosFuera;
 
         return new EstadisticasResponse(
-                Map.of("ABIERTO", ticketRepository.countByEstado(Estado.ABIERTO),
-                        "EN_PROCESO", ticketRepository.countByEstado(Estado.EN_PROCESO),
-                        "RESUELTO", ticketRepository.countByEstado(Estado.RESUELTO)),
-                ticketRepository.count(),
-                resueltosDentro,
-                resueltosFuera,
-                totalResueltos,
+                Map.of("ABIERTO", ticketRepository.countByEstado(Estado.ABIERTO), "EN_PROCESO",
+                        ticketRepository.countByEstado(Estado.EN_PROCESO), "RESUELTO",
+                        ticketRepository.countByEstado(Estado.RESUELTO)),
+                ticketRepository.count(), resueltosDentro, resueltosFuera, totalResueltos,
                 totalResueltos == 0 ? 0.0 : Math.round((resueltosDentro * 10000.0) / totalResueltos) / 100.0,
-                ticketRepository.countVencidos(LocalDateTime.now())
-        );
+                ticketRepository.countVencidos(LocalDateTime.now()));
     }
 }

@@ -30,9 +30,9 @@ public class TicketService {
     private final SlaService slaService;
 
     public TicketService(TicketRepository ticketRepository,
-                         UsuarioRepository usuarioRepository,
-                         TicketHistorialRepository historialRepository,
-                         SlaService slaService) {
+            UsuarioRepository usuarioRepository,
+            TicketHistorialRepository historialRepository,
+            SlaService slaService) {
         this.ticketRepository = ticketRepository;
         this.usuarioRepository = usuarioRepository;
         this.historialRepository = historialRepository;
@@ -42,14 +42,14 @@ public class TicketService {
     @Transactional
     public TicketResponse crear(TicketRequest request, Long creadorId) {
         Usuario creador = usuarioRepository.findById(creadorId)
-                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado."));
 
         LocalDateTime ahora = LocalDateTime.now();
         Ticket ticket = Ticket.builder()
                 .titulo(request.titulo())
                 .descripcion(request.descripcion())
                 .prioridad(request.prioridad())
-                .estado(Estado.ABIERTO) 
+                .estado(Estado.ABIERTO)
                 .creadoEn(ahora)
 
                 .slaVenceEn(slaService.calcularVencimientoSla(ahora, request.prioridad()))
@@ -71,7 +71,7 @@ public class TicketService {
         boolean esDueno = ticket.getCreadoPor().getId().equals(usuario.getId());
         boolean esStaff = usuario.getRol() == Rol.SOPORTE || usuario.getRol() == Rol.ADMIN;
         if (!esDueno && !esStaff) {
-            throw new AccessDeniedException("Un usuario solo puede consultar sus propios tickets");
+            throw new AccessDeniedException("Un usuario solo puede consultar sus propios tickets.");
         }
         return TicketResponse.desde(ticket);
     }
@@ -102,7 +102,6 @@ public class TicketService {
                 ticket.setResueltoEn(null);
             }
 
-            // Historial: registra quien cambio el estado y cuando
             historialRepository.save(TicketHistorial.builder()
                     .ticket(ticket)
                     .estadoAnterior(anterior)
@@ -117,7 +116,7 @@ public class TicketService {
 
     @Transactional(readOnly = true)
     public List<TicketHistorialResponse> historial(Long ticketId, Usuario usuario) {
-        // Misma regla de acceso que consultar el ticket: dueno o SOPORTE/ADMIN
+
         porId(ticketId, usuario);
         return historialRepository.findByTicketIdOrderByFechaAsc(ticketId)
                 .stream().map(TicketHistorialResponse::desde).toList();
