@@ -60,37 +60,73 @@ public class DataSeeder implements CommandLineRunner {
 
                 LocalDateTime ahora = LocalDateTime.now();
 
-                LocalDateTime creadoVencido = ahora.minusDays(10);
+                // TICKETS CREADOS POR ADMIN (rol ADMIN)
+                LocalDateTime adminVencido = ahora.minusDays(3);
                 ticketRepository.save(Ticket.builder()
-                                .titulo("Servidor de produccion caido.")
-                                .descripcion("El servidor principal no responde desde hace días.")
+                                .titulo("Caida de base de datos crítica.")
+                                .descripcion("La base de datos principal no responde transacciones.")
                                 .prioridad(Prioridad.ALTA)
                                 .estado(Estado.ABIERTO)
-                                .creadoEn(creadoVencido)
-                                .slaVenceEn(slaService.calcularVencimientoSla(creadoVencido, Prioridad.ALTA))
-                                .creadoPor(usuario)
+                                .creadoEn(adminVencido)
+                                .slaVenceEn(slaService.calcularVencimientoSla(adminVencido, Prioridad.ALTA))
+                                .creadoPor(admin)
                                 .build());
 
-                LocalDateTime creadoProceso = ahora.minusHours(2);
+                LocalDateTime adminActivo = ahora.minusHours(1);
                 ticketRepository.save(Ticket.builder()
-                                .titulo("No puedo iniciar sesion en la VPN.")
-                                .descripcion("Error de autenticacion al conectar la VPN corporativa.")
+                                .titulo("Nuevo usuario no puede registrarse.")
+                                .descripcion("El formulario de registro da error de validación.")
+                                .prioridad(Prioridad.MEDIA)
+                                .estado(Estado.ABIERTO)
+                                .creadoEn(adminActivo)
+                                .slaVenceEn(slaService.calcularVencimientoSla(adminActivo, Prioridad.MEDIA))
+                                .creadoPor(admin)
+                                .build());
+
+                // TICKETS CREADOS POR SOPORTE (rol SOPORTE)
+                LocalDateTime soporteVencido = ahora.minusDays(5);
+                ticketRepository.save(Ticket.builder()
+                                .titulo("Impresora de la sala 4 no imprime.")
+                                .descripcion("Error de papel atascado, ya se revisó hardware.")
+                                .prioridad(Prioridad.BAJA)
+                                .estado(Estado.ABIERTO)
+                                .creadoEn(soporteVencido)
+                                .slaVenceEn(slaService.calcularVencimientoSla(soporteVencido, Prioridad.BAJA))
+                                .creadoPor(soporte)
+                                .build());
+
+                LocalDateTime soporteProceso = ahora.minusHours(5);
+                ticketRepository.save(Ticket.builder()
+                                .titulo("Acceso VPN lento para usuario nuevo.")
+                                .descripcion("La conexión VPN establece pero la velocidad es insuficiente.")
                                 .prioridad(Prioridad.MEDIA)
                                 .estado(Estado.EN_PROCESO)
-                                .creadoEn(creadoProceso)
-                                .slaVenceEn(slaService.calcularVencimientoSla(creadoProceso, Prioridad.MEDIA))
+                                .creadoEn(soporteProceso)
+                                .slaVenceEn(slaService.calcularVencimientoSla(soporteProceso, Prioridad.MEDIA))
+                                .creadoPor(soporte)
+                                .build());
+
+                // TICKETS CREADOS POR USUARIO (rol USUARIO)
+                LocalDateTime usuarioVencido = ahora.minusDays(2);
+                ticketRepository.save(Ticket.builder()
+                                .titulo("No llega email de bienvenida.")
+                                .descripcion("El usuario no recibe el email después de registrarse.")
+                                .prioridad(Prioridad.ALTA)
+                                .estado(Estado.ABIERTO)
+                                .creadoEn(usuarioVencido)
+                                .slaVenceEn(slaService.calcularVencimientoSla(usuarioVencido, Prioridad.ALTA))
                                 .creadoPor(usuario)
                                 .build());
 
-                LocalDateTime creadoResuelto = ahora.minusDays(3);
+                LocalDateTime usuarioResuelto = ahora.minusHours(10);
                 ticketRepository.save(Ticket.builder()
-                                .titulo("Impresora de la oficina no imprime.")
-                                .descripcion("La impresora muestra error de papel atascado.")
+                                .titulo("Duda sobre uso del panel de control.")
+                                .descripcion("El usuario no encuentra la opción de editar perfil.")
                                 .prioridad(Prioridad.BAJA)
                                 .estado(Estado.RESUELTO)
-                                .creadoEn(creadoResuelto)
-                                .slaVenceEn(slaService.calcularVencimientoSla(creadoResuelto, Prioridad.BAJA))
-                                .resueltoEn(creadoResuelto.plusDays(1))
+                                .creadoEn(usuarioResuelto)
+                                .slaVenceEn(slaService.calcularVencimientoSla(usuarioResuelto, Prioridad.BAJA))
+                                .resueltoEn(usuarioResuelto.plusHours(2))
                                 .creadoPor(usuario)
                                 .build());
         }
